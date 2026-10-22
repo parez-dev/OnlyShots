@@ -64,6 +64,8 @@ import app.onlyshots.core.designsystem.CgTheme
 import app.onlyshots.core.designsystem.caps
 import app.onlyshots.core.designsystem.component.AddRow
 import app.onlyshots.core.designsystem.component.Arriving
+import app.onlyshots.core.designsystem.component.BarIcon
+import app.onlyshots.core.designsystem.component.BarPriority
 import app.onlyshots.core.designsystem.component.BluetoothBlue
 import app.onlyshots.core.designsystem.component.CgButton
 import app.onlyshots.core.designsystem.component.CgButtonKind
@@ -76,6 +78,8 @@ import app.onlyshots.core.designsystem.component.HairlineGrid
 import app.onlyshots.core.designsystem.component.HairlineStack
 import app.onlyshots.core.designsystem.component.HeaderBack
 import app.onlyshots.core.designsystem.component.MachineRow
+import app.onlyshots.core.designsystem.component.NativeBarItem
+import app.onlyshots.core.designsystem.component.NativeItems
 import app.onlyshots.core.designsystem.component.ReadingTile
 import app.onlyshots.core.designsystem.component.RecordAction
 import app.onlyshots.core.designsystem.component.RuleRow
@@ -97,6 +101,7 @@ import app.onlyshots.core.model.availableFor
 import app.onlyshots.core.model.stepLabel
 import app.onlyshots.core.model.stepped
 import app.onlyshots.core.resources.Res
+import app.onlyshots.core.resources.core_record
 import app.onlyshots.core.resources.core_version
 import app.onlyshots.core.resources.home_about_text
 import app.onlyshots.core.resources.home_add_by_address
@@ -233,6 +238,7 @@ fun HomeBody(
 ) {
     val nextTake = takeOf ?: { take }
     val layout = LocalWindowLayout.current
+    HomeNativeBar(recordAction(state).enabled, onOpenCamera, onAddByAddress)
     if (layout.kind == LayoutKind.Wide) {
         // Two pages: where the shot comes from, and the take the record button starts.
         Box(modifier.fillMaxSize().background(CgColors.Surface.Base)) {
@@ -850,3 +856,28 @@ private fun FooterLink(label: String, modifier: Modifier = Modifier, onClick: ()
 
 /** A wide Home's first page this wide or more puts machines and scales side by side. */
 private val TWO_COLUMNS = 600.dp
+
+/**
+ * Where the bars are native (iPhone Duo): record, the screen's prominent action, and adding a machine by its address at
+ * the far end. The record key on the screen stays: it is the page's own call to action.
+ */
+@Composable
+private fun HomeNativeBar(canRecord: Boolean, onRecord: () -> Unit, onAddByAddress: () -> Unit) {
+    val record = stringResource(Res.string.core_record)
+    val address = stringResource(Res.string.home_add_by_address)
+    NativeItems(
+        listOf(
+            NativeBarItem(
+                TestTags.HomeRecordAction,
+                record,
+                BarIcon.Record,
+                prominent = true,
+                enabled = canRecord,
+                priority = BarPriority.High,
+            ),
+            NativeBarItem(TestTags.HomeAddByAddress, address, BarIcon.Add, bottom = true, priority = BarPriority.Low),
+        )
+    ) { id ->
+        if (id == TestTags.HomeRecordAction) onRecord() else onAddByAddress()
+    }
+}

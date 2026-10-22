@@ -1,6 +1,7 @@
 name: pr
 
-# Every pull request: formatting, the version check, the shared tests, the screenshot tests and the UI tests.
+# Every pull request: formatting, the version check, the shared tests, the screenshot tests and the UI tests; on
+# branch PRs also the iPhone Duo screenshot tests.
 # PRs from this repository's branches run on our self-hosted Mac (labels self-hosted, macOS, ARM64). PRs from forks run
 # on a GitHub-hosted runner instead, so a stranger's code never runs on that machine.
 
@@ -61,3 +62,31 @@ jobs:
           path: |
             screenshots/build/reports/tests/mugshotTestAndroidMain/
             screenshots/build/mugshot/failures/
+
+  # iPhone Duo goldens (tools/ios-screenshots/run.sh): the whole screen as the system shows it, closed, open and
+  # half-open. The iPhone Duo simulator needs Xcode 27.1, which only the self-hosted Mac has, so branch PRs only: a fork's
+  # PR skips it.
+  duo-screenshots:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, macOS, ARM64]
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      # The app's pre-build phase builds the Kotlin module through Gradle.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@v4
+      # xcodegen and npm (for mobilecli, which folds the simulator) are Homebrew's, outside the runner user's PATH.
+      - name: Homebrew on the PATH
+        run: echo /opt/homebrew/bin >> "$GITHUB_PATH"
+      - name: iPhone Duo screenshot tests
+        run: tools/ios-screenshots/run.sh
+      # The new pictures and the changed pixels in red, plus every screen in the result bundles.
+      - name: iPhone Duo screenshot report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: duo-screenshot-report
+          path: app/iosApp/build/duo-screenshots/

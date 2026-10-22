@@ -50,6 +50,8 @@ object TestTags {
 
     // Edit.
     const val EditSound = "edit.sound"
+    const val EditUndo = "edit.undo"
+    const val EditRedo = "edit.redo"
     const val EditExport = "edit.export"
     const val EditShotChip = "edit.shotChip"
     /** The graph over the picture, in the editor and on the record screen: tap to select. */

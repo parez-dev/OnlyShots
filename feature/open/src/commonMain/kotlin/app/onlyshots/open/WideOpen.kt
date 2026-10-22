@@ -74,6 +74,7 @@ import app.onlyshots.core.designsystem.CgStroke
 import app.onlyshots.core.designsystem.CgTheme
 import app.onlyshots.core.designsystem.caps
 import app.onlyshots.core.designsystem.component.CgIcon
+import app.onlyshots.core.designsystem.component.LocalNativeChrome
 import app.onlyshots.core.designsystem.component.OnlyShotsMark
 import app.onlyshots.core.designsystem.headline
 import app.onlyshots.core.model.NormRect
@@ -578,6 +579,8 @@ private const val SHINE_REST_MS = 2_400
  */
 @Composable
 internal fun OpenEditorKey(ready: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier, fill: Boolean = false) {
+    // Where the bars are native (iPhone Duo) opening the editor is their prominent item.
+    if (LocalNativeChrome.current != null) return
     // Read while drawing: the change of colour redraws the key, it does not recompose it.
     val ground = animateColorAsState(if (ready) CgColors.Brand.Signal else Color.Transparent, CgMotion.short())
     val ink by animateColorAsState(if (ready) CgColors.Text.OnLight else CgColors.Text.Disabled, CgMotion.short())

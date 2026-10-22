@@ -43,10 +43,14 @@ import app.onlyshots.core.designsystem.CgSpace
 import app.onlyshots.core.designsystem.CgStroke
 import app.onlyshots.core.designsystem.CgTheme
 import app.onlyshots.core.designsystem.caps
+import app.onlyshots.core.designsystem.component.BarIcon
 import app.onlyshots.core.designsystem.component.BluetoothBlue
 import app.onlyshots.core.designsystem.component.CgSheet
 import app.onlyshots.core.designsystem.component.ChoiceCard
 import app.onlyshots.core.designsystem.component.IconCircleButton
+import app.onlyshots.core.designsystem.component.LocalNativeChrome
+import app.onlyshots.core.designsystem.component.NativeBarItem
+import app.onlyshots.core.designsystem.component.NativeItems
 import app.onlyshots.core.designsystem.component.OnlyShotsMark
 import app.onlyshots.core.designsystem.component.SheetHeader
 import app.onlyshots.core.designsystem.component.topRule
@@ -60,6 +64,7 @@ import app.onlyshots.core.resources.home_start_graph_series
 import app.onlyshots.core.resources.home_start_question
 import app.onlyshots.core.resources.home_start_record_detail
 import app.onlyshots.core.resources.home_start_record_title
+import app.onlyshots.core.resources.privacy_title
 import app.onlyshots.core.resources.start_title
 import app.onlyshots.layout.LayoutKind
 import app.onlyshots.layout.LocalWindowLayout
@@ -85,6 +90,16 @@ fun StartScreen(onRecord: () -> Unit, onEdit: () -> Unit, onPrivacy: (() -> Unit
                     }
                 }
         )
+    }
+    // Where the bars are native (iPhone Duo) help and privacy are its items, not keys on the screen.
+    val privacyTitle = stringResource(Res.string.privacy_title)
+    NativeItems(
+        buildList {
+            add(NativeBarItem(TestTags.StartHelp, title, BarIcon.Help, group = 1))
+            if (onPrivacy != null) add(NativeBarItem(TestTags.HelpPrivacy, privacyTitle, BarIcon.Privacy, group = 1))
+        }
+    ) { id ->
+        if (id == TestTags.StartHelp) help = true else onPrivacy?.invoke()
     }
     // On a book foldable the help takes the right page, in place of the choices; elsewhere it is a sheet.
     val fold = LocalWindowLayout.current.fold
@@ -228,6 +243,7 @@ private fun StartHeader(onHelp: (() -> Unit)?, big: Boolean) {
 
 @Composable
 private fun HelpKey(onHelp: () -> Unit) {
+    if (LocalNativeChrome.current != null) return
     IconCircleButton(
         CgIcons.Help,
         stringResource(Res.string.home_about),

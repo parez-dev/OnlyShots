@@ -90,7 +90,10 @@ Late shot gets old tail joined in front (`Mp4Join` on Android; on iOS old writer
 **Storage.** Sidecar JSON per video, beside the video = only truth. No database: nothing lists the library.
 
 **Layout.** `windowLayout(...)` picks `Phone`, `Wide`, `Stacked`, `Tiny`. Every adaptive branch goes through it.
-Foldables follow "OnlyShots Foldables" canvas: nothing on fold; picture one pane, controls other.
+Foldables follow "OnlyShots Foldables" canvas: nothing on fold; picture one pane, controls other. iPhone Duo follows
+Figma "OnlyShots · iPhone Duo" (Apple HIG "Designing for iPhone Duo"): system bars, not Compose ones, via the native
+shell (`NativeShell.swift`, `LocalNativeChrome`); status, Dynamic Island and toolbar share a side column except on
+the inner display upright. Check on the iPhone Duo simulator (Xcode 27.1): closed, open, half-open, both orientations.
 
 **Look.** "Instrument" (canvas "OnlyShots · Instrument"): ink `#0B0B0B`, bone `#E8E6E1` text, one signal `#FF5A1F`
 accent, `#3A3A38` hairlines, square corners. IBM Plex Mono SemiBold names and counts (labels drawn in capitals with
@@ -104,6 +107,7 @@ accent, `#3A3A38` hairlines, square corners. IBM Plex Mono SemiBold names and co
 ./gradlew testAndroidHostTest                    # shared tests, JVM (CI runs this)
 ./gradlew :screenshots:verifyMugshot             # screenshots, JVM, no device
 ./gradlew :screenshots:recordMugshot             # re-record after wanted visual change
+tools/ios-screenshots/run.sh                     # iPhone Duo goldens per pose (run.sh record to re-record)
 ./gradlew iosSimulatorArm64Test                  # shared tests + AVFoundation export, simulator
 ./gradlew :video:connectedAndroidDeviceTest      # Media3 export alignment, needs device
 ./gradlew :video:desktopTest                     # FFmpeg export alignment, JVM
@@ -124,6 +128,12 @@ accent, `#3A3A38` hairlines, square corners. IBM Plex Mono SemiBold names and co
 - **Screenshots:** `@Preview` + `@Mugshot` in `screenshots/`. Layoutlib renders on JVM. Goldens are WebP in
   `screenshots/src/androidHostTest/snapshots/images/`. Fail = HTML diff report in
   `screenshots/build/reports/tests/mugshotTestAndroidMain/`.
+- **iPhone Duo screenshots:** XCUITest `DuoScreenshotTests` takes the whole screen (system side column, status,
+  island) on its own iPhone Duo simulator ("OnlyShots Duo screenshots", never turned by hand), closed / open /
+  half-open, and compares it with the PNG goldens in
+  `app/iosApp/screenshots/duo` (half size; fails above 0.2 % differing pixels). `tools/ios-screenshots/run.sh` pins
+  the status bar to 9:41, folds the simulator with mobilecli (pinned in the script) and runs it once per pose; a
+  failure leaves the new picture and a `-diff.png` in `app/iosApp/build/duo-screenshots`.
 - **Can't capture:** infinite animation (`RecordButton(Armed)`), `ModalBottomSheet`, screen wrappers with
   `koinViewModel()`. Preview stateless body instead (`HomeBody`, `RecordBody`, `EditBody`, …). Haze blur not drawn by
   layoutlib; device test checks it.
@@ -251,7 +261,7 @@ All seven milestones done: spike, foundations, record, editor, share, more sourc
 - `ITSAppUsesNonExemptEncryption` = false.
 - Reviewers have no machine: tell them about "try a sample shot" and **simulate shot**.
 - **iPhone Duo:** screenshots needed from April 2027. Scene manifest in `Info.plist` must stay (else unfold kicks
-  app out). Fold comes from Swift `FoldWatchingController`.
+  app out). Fold comes from Swift `ComposeHostController` (`NativeShell.swift`).
 
 ## Open questions
 

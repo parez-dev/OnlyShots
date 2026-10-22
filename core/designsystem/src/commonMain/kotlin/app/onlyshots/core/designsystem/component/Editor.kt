@@ -214,6 +214,15 @@ fun ExportOverlay(
 ) {
     val note = @Composable { ExportNote(footer, leave, ask) }
     val keys = @Composable { if (savedKeys != null) SavedKeys(savedKeys) }
+    // Where the bars are native (iPhone Duo) the cover has a bar of its own: nothing to do while it runs (cancel is on
+    // the cover), close once the video is made.
+    val close = stringResource(Res.string.core_export_keep_editing)
+    NativeItems(
+        if (done != null) listOf(NativeBarItem(TestTags.ExportKeepEditing, close, BarIcon.Close)) else emptyList(),
+        overlay = true,
+    ) {
+        onKeepEditing()
+    }
     if (fullScreen) {
         ExportScreen(
             detail,

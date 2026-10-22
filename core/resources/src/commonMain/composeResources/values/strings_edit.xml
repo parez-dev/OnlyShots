@@ -75,6 +75,8 @@
     <string name="edit_find_start">find start</string>
     <string name="edit_muted">muted</string>
     <string name="edit_sound">sound</string>
+    <string name="edit_undo">undo</string>
+    <string name="edit_redo">redo</string>
     <string name="edit_fit">fit</string>
     <string name="edit_zoom_in">zoom in</string>
     <string name="edit_step_back">a frame back</string>

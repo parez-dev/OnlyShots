@@ -117,6 +117,29 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back emulated -camera-front emulated
           script: ./gradlew :video:connectedAndroidDeviceTest :app:uitests:connectedAndroidTest --stacktrace
 
+  # iPhone Duo goldens (tools/ios-screenshots/run.sh), as in pr.yml: the iPhone Duo simulator needs Xcode 27.1, which
+  # only the self-hosted Mac has.
+  duo-screenshots:
+    runs-on: [self-hosted, macOS, ARM64]
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Homebrew on the PATH
+        run: echo /opt/homebrew/bin >> "$GITHUB_PATH"
+      - name: iPhone Duo screenshot tests
+        run: tools/ios-screenshots/run.sh
+      - name: iPhone Duo screenshot report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: duo-screenshot-report
+          path: app/iosApp/build/duo-screenshots/
+
   ios:
     runs-on: macos-latest
     steps:

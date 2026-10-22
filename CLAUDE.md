@@ -23,6 +23,7 @@ variants. Only CI secret: `VERCEL_TOKEN` (org secret, web deploy on `main`).
 ./gradlew :video:desktopTest                           # FFmpeg export, probe, player, JVM
 ./gradlew :screenshots:verifyMugshot                   # screenshots, JVM, no device
 ./gradlew :screenshots:recordMugshot                   # re-record after wanted visual change
+tools/ios-screenshots/run.sh                           # iPhone Duo goldens, every pose, simulator (record: re-record)
 ./gradlew ktfmtCheck                                   # format gate. Fix: ktfmtFormat
 ./gradlew :uitests:desktopTest                         # UI flows, phone app + editor, every layout (PR gate)
 ./gradlew :app:desktopApp:test                         # desktop app starts on Open
@@ -79,11 +80,12 @@ Format: ktfmt `kotlinLangStyle`, 4 spaces, width 120. Run `ktfmtFormat` before c
 ## CI
 
 - **`pr.yml`** (every PR): `ktfmtCheck`, `checkAppVersion`, `testAndroidHostTest`, `:screenshots:verifyMugshot`,
-  `:uitests:desktopTest`, `:app:desktopApp:test`.
+  `:uitests:desktopTest`, `:app:desktopApp:test`. Branch PRs also `duo-screenshots` (`tools/ios-screenshots/run.sh`,
+  iPhone Duo simulator, self-hosted Mac only).
   Branch PRs on self-hosted Mac (`self-hosted`, `macOS`, `ARM64`). Fork PRs on `ubuntu-latest`: fork code never runs on
   the Mac. Keep that guard.
 - **`ci.yml`** (push to `main`): full build, all platforms, export tests, UI smoke tests (Android emulator, iOS
-  XCUITest, web Playwright), web deploy.
+  XCUITest, web Playwright), iPhone Duo goldens (self-hosted Mac), web deploy.
 - **`release.yml`** (tag `v*`): signed Android bundle to Play internal, desktop installers, GitHub Release.
 
 ## Version and release
@@ -207,8 +209,8 @@ alias of browser `File` on web.
 
 **Adaptive layout.** One function: `windowLayout(info, widthDp, heightDp, density)` → `Phone`/`Wide`/`Stacked`/`Tiny`
 + split. Input: `currentWindowAdaptiveInfo()` (size classes, Android hinges). iOS: `platformWindowAdaptiveInfo()` adds
-foldable iPhone fold from `IosHinge`, fed by Swift `FoldWatchingController` (Kotlin UIKit bindings lack iOS 27.1 hinge
-API). Every adaptive branch goes through it (`LocalWindowLayout`). No ad hoc size checks.
+foldable iPhone fold from `IosHinge`, fed by Swift `ComposeHostController` (`NativeShell.swift`; Kotlin UIKit bindings
+lack iOS 27.1 hinge API). Every adaptive branch goes through it (`LocalWindowLayout`). No ad hoc size checks.
 
 - **`Wide`:** `WidePanes`. On fold (`WindowLayout.fold`): two pages meeting at fold. Else picture beside panel or
   above it, whichever gives picture more room (`placePanel`), where phone's bottom sheets go.
@@ -216,6 +218,12 @@ API). Every adaptive branch goes through it (`LocalWindowLayout`). No ad hoc siz
   graph pages in bottom sheets. Graph kept where screen shows it (`OverlayEditLayer(bounds)`).
 - **Foldables:** follow "OnlyShots Foldables" canvas. Previews in `screenshots/.../FoldablePreviews.kt` hand posture
   directly. `TwoPane` only for tabletop (`Stacked`). Remaining bottom sheets capped 640 dp.
+- **iPhone Duo native shell** (iOS 27.1, Figma "OnlyShots · iPhone Duo"): Swift `ShellNavigationController` around
+  the one Compose screen. Where there is a hinge, system shows each screen's bar (side column on outer and inner
+  landscape, top bar on inner portrait); elsewhere bar hidden, screens draw their own. Screens hand bar over via
+  `LocalNativeChrome` (`:core:designsystem` `NativeChrome.kt`): `BackButton` registers itself, actions via
+  `NativeItems(...)` (Back → prominent → groups → bottom), Compose key they replace skipped while native. New top-bar
+  key on a screen: add its `NativeItems` entry. Bar crosses to Swift as JSON (`NativeShell.kt`).
 
 **DI** = Koin. `editorModule` (`:editor`): library, styles, export, editor view models. `appModule`
 (`app/shared/.../di/AppModule.kt`): phones' sources and screens. `PlatformModule.<platform>.kt` per target. Web's
@@ -245,6 +253,11 @@ module in `app/webApp/.../Main.kt`. Platform features = `expect`/`actual` in `:c
   and tablet (`@ScreenShots` = `@MugshotDevices(PHONE, TABLET)`; `@Preview(widthDp)` ignored).
 - **Goldens:** WebP in `screenshots/src/androidHostTest/snapshots/images/`. Fail → diff report
   `screenshots/build/reports/tests/mugshotTestAndroidMain/index.html`.
+- **iPhone Duo goldens** (`app/iosApp/screenshots/duo`, PNG, half size): whole screen as the system shows it (side
+  column, status, island), closed / open / half-open (inner display sideways). XCUITest `DuoScreenshotTests`, run per pose by
+  `tools/ios-screenshots/run.sh` (folds simulator with mobilecli; XCTest can't move the hinge). Skipped without
+  `DUO_POSE`, so smoke tests unaffected. Own simulator ("OnlyShots Duo screenshots"), never turned: turned the other
+  way it lays out a pixel apart. Record after a wanted change on iOS: `run.sh record`.
 - **Can't capture:** infinite animation (`RecordButton(Armed)`), `ModalBottomSheet`, screens that default
   `koinViewModel()` or call `expect` composables. Extract stateless body first.
 

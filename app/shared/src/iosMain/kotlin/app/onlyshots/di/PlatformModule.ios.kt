@@ -57,7 +57,9 @@ actual val platformModule: Module = module {
 private class IosShare : PlatformShare {
     override fun shareVideos(files: List<Path>, onDone: () -> Unit) {
         if (files.isEmpty()) return
-        val root = UIApplication.sharedApplication.keyWindow?.rootViewController ?: return
+        // From whatever is in front (the native shell's bar, a picker), not the window's root under it.
+        var root = UIApplication.sharedApplication.keyWindow?.rootViewController ?: return
+        while (true) root = root.presentedViewController ?: break
         val sheet = UIActivityViewController(files.map { NSURL.fileURLWithPath(it.toString()) }, null)
         // iPad shows the sheet as a popover, which needs an anchor.
         sheet.popoverPresentationController?.sourceView = root.view

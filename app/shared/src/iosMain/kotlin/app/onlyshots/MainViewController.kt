@@ -1,6 +1,8 @@
 package app.onlyshots
 
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.window.ComposeUIViewController
+import app.onlyshots.core.designsystem.component.LocalNativeChrome
 import app.onlyshots.di.initKoin
 import app.onlyshots.layout.IosHinge
 import platform.UIKit.UIViewController
@@ -8,7 +10,15 @@ import platform.UIKit.UIViewController
 private var koinStarted = false
 
 /** Entry point for the iOS host app (SwiftUI `UIViewControllerRepresentable`). */
-fun MainViewController(): UIViewController {
+fun MainViewController(): UIViewController = composeRoot(native = false)
+
+/**
+ * The app inside the native shell (iOS 27.1, `UINavigationController`): the screens hand their back key and actions to
+ * [NativeShell] while the host has it on, and the system shows them in its bar (the side column of iPhone Duo).
+ */
+fun NativeMainViewController(): UIViewController = composeRoot(native = true)
+
+private fun composeRoot(native: Boolean): UIViewController {
     if (!koinStarted) {
         @OptIn(kotlin.experimental.ExperimentalNativeApi::class)
         DevTools.enabled = Platform.isDebugBinary
@@ -18,7 +28,13 @@ fun MainViewController(): UIViewController {
     // The launch screen shows the finished mark (design/splash/launch.py); the app carries on with the pulse and the
     // hand-off as soon as it draws.
     val splash = SplashState(held = true).apply { release() }
-    return ComposeUIViewController { OnlyShotsApp(splash) }
+    return ComposeUIViewController {
+        if (native) {
+            CompositionLocalProvider(LocalNativeChrome provides NativeShell.current) { OnlyShotsApp(splash) }
+        } else {
+            OnlyShotsApp(splash)
+        }
+    }
 }
 
 /**

@@ -9,8 +9,10 @@
 /* Begin PBXBuildFile section */
 		0314A99D7A6FC8341C4C49E2 /* ContinuedExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BCF4D5A5F71BF94FD82FB7A /* ContinuedExport.swift */; };
 		09FED4B446BD58DF150C455A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = C6D2DD7FE2E0BF5DB2A96B4B /* PrivacyInfo.xcprivacy */; };
+		19BEE1B180A632BCA7BB94EE /* DuoScreenshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD8E1022D99085F12C7254F5 /* DuoScreenshotTests.swift */; };
 		22EA1CB33A17DCC6FC82406D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F543015C899423D4B01CEB2E /* Assets.xcassets */; };
 		307C2654CD5972A25FB7FD87 /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668CECA83ACC03A83C85A623 /* iOSApp.swift */; };
+		45FA183AB79E267E106C578D /* NativeShell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5622107BDC643D4EF7C9D8B0 /* NativeShell.swift */; };
 		56B0305B5D3847FC6B326502 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */; };
 		A83923FAE87AD24B504F95CA /* AppSmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10F735A81D29C72F65A01D18 /* AppSmokeTests.swift */; };
 /* End PBXBuildFile section */
@@ -28,6 +30,7 @@
 /* Begin PBXFileReference section */
 		10F735A81D29C72F65A01D18 /* AppSmokeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSmokeTests.swift; sourceTree = "<group>"; };
 		323906AFB18147ABEDEBDB38 /* iosAppUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = iosAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		5622107BDC643D4EF7C9D8B0 /* NativeShell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeShell.swift; sourceTree = "<group>"; };
 		668CECA83ACC03A83C85A623 /* iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSApp.swift; sourceTree = "<group>"; };
 		7BCF4D5A5F71BF94FD82FB7A /* ContinuedExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContinuedExport.swift; sourceTree = "<group>"; };
 		86038AE1032E284E79B32AD6 /* iosApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -36,6 +39,7 @@
 		C6D2DD7FE2E0BF5DB2A96B4B /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		CE8509E5A49E4A5CAAEB3ADB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		F543015C899423D4B01CEB2E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		FD8E1022D99085F12C7254F5 /* DuoScreenshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DuoScreenshotTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -48,6 +52,7 @@
 				C117AD187833E2513BD2F553 /* Info.plist */,
 				C49B0B02429FBBC9F867DDE1 /* iosApp.entitlements */,
 				668CECA83ACC03A83C85A623 /* iOSApp.swift */,
+				5622107BDC643D4EF7C9D8B0 /* NativeShell.swift */,
 				C6D2DD7FE2E0BF5DB2A96B4B /* PrivacyInfo.xcprivacy */,
 			);
 			path = iosApp;
@@ -75,6 +80,7 @@
 			isa = PBXGroup;
 			children = (
 				10F735A81D29C72F65A01D18 /* AppSmokeTests.swift */,
+				FD8E1022D99085F12C7254F5 /* DuoScreenshotTests.swift */,
 			);
 			path = iosAppUITests;
 			sourceTree = "<group>";
@@ -193,6 +199,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A83923FAE87AD24B504F95CA /* AppSmokeTests.swift in Sources */,
+				19BEE1B180A632BCA7BB94EE /* DuoScreenshotTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -202,6 +209,7 @@
 			files = (
 				56B0305B5D3847FC6B326502 /* ContentView.swift in Sources */,
 				0314A99D7A6FC8341C4C49E2 /* ContinuedExport.swift in Sources */,
+				45FA183AB79E267E106C578D /* NativeShell.swift in Sources */,
 				307C2654CD5972A25FB7FD87 /* iOSApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

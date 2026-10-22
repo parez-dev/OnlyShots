@@ -110,9 +110,17 @@ fun CgRoundButton(
     }
 }
 
-/** The one back button: a 44 dp square key with a hairline edge, on every screen that has a way back. */
+/**
+ * The one back button: a 44 dp square key with a hairline edge, on every screen that has a way back. Where the host
+ * shows the bars natively (iPhone Duo) it draws nothing and hands its action to the system bar instead.
+ */
 @Composable
 fun BackButton(onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) {
+    val native = LocalNativeChrome.current
+    if (native != null) {
+        NativeBack(native, onClick, enabled)
+        return
+    }
     val back = stringResource(Res.string.core_back)
     Box(
         modifier

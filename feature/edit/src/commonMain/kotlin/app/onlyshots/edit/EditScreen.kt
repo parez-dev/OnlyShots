@@ -101,6 +101,8 @@ import app.onlyshots.core.designsystem.caps
 import app.onlyshots.core.designsystem.component.BackButton
 import app.onlyshots.core.designsystem.component.Banner
 import app.onlyshots.core.designsystem.component.BannerKind
+import app.onlyshots.core.designsystem.component.BarIcon
+import app.onlyshots.core.designsystem.component.BarPriority
 import app.onlyshots.core.designsystem.component.CgButton
 import app.onlyshots.core.designsystem.component.CgDialog
 import app.onlyshots.core.designsystem.component.CgIcon
@@ -112,6 +114,9 @@ import app.onlyshots.core.designsystem.component.ExportOverlay
 import app.onlyshots.core.designsystem.component.ExportSavedKeys
 import app.onlyshots.core.designsystem.component.FormatOption
 import app.onlyshots.core.designsystem.component.FormatPicker
+import app.onlyshots.core.designsystem.component.LocalNativeChrome
+import app.onlyshots.core.designsystem.component.NativeBarItem
+import app.onlyshots.core.designsystem.component.NativeItems
 import app.onlyshots.core.designsystem.component.OVER_VIDEO
 import app.onlyshots.core.designsystem.component.Pill
 import app.onlyshots.core.designsystem.component.SegmentedControl
@@ -157,6 +162,7 @@ import app.onlyshots.core.resources.edit_pause
 import app.onlyshots.core.resources.edit_phases_count
 import app.onlyshots.core.resources.edit_play
 import app.onlyshots.core.resources.edit_recorded_with_video
+import app.onlyshots.core.resources.edit_redo
 import app.onlyshots.core.resources.edit_reframe_hint
 import app.onlyshots.core.resources.edit_saved
 import app.onlyshots.core.resources.edit_shot
@@ -167,6 +173,7 @@ import app.onlyshots.core.resources.edit_step_forward
 import app.onlyshots.core.resources.edit_style
 import app.onlyshots.core.resources.edit_style_named
 import app.onlyshots.core.resources.edit_tap_graph_hint
+import app.onlyshots.core.resources.edit_undo
 import app.onlyshots.core.resources.edit_zoom_and_crop
 import app.onlyshots.core.resources.edit_zoom_in
 import app.onlyshots.core.resources.text
@@ -458,6 +465,7 @@ fun EditBody(
                 )
             }
         }
+    EditNativeBar(ui, actions, player, onExport = if (layout.kind == LayoutKind.Phone) null else export)
     // A flip's cover screen: there is no room to edit, only to say so.
     if (layout.kind == LayoutKind.Tiny) {
         Box(Modifier.fillMaxSize().background(CgColors.Surface.Base).safeDrawingPadding().then(keys)) {
@@ -816,12 +824,14 @@ private fun TopBar(ui: EditUiState, onBack: () -> Unit, actions: EditActions, pl
                 },
         )
         SoundToggle(ui.item, player)
-        TopChip(
-            stringResource(Res.string.edit_export),
-            onClick = { actions.openSheet(EditSheet.EXPORT) },
-            modifier = Modifier.testTag(TestTags.EditExport),
-            primary = true,
-        )
+        if (LocalNativeChrome.current == null) {
+            TopChip(
+                stringResource(Res.string.edit_export),
+                onClick = { actions.openSheet(EditSheet.EXPORT) },
+                modifier = Modifier.testTag(TestTags.EditExport),
+                primary = true,
+            )
+        }
     }
 }
 
@@ -1162,12 +1172,55 @@ private fun WideTopBar(ui: EditUiState, onBack: () -> Unit, player: PlayerState)
 }
 
 /**
+ * Where the bars are native (iPhone Duo): export (prominent), undo and redo together, and the sound last, so it is the
+ * first to go to the overflow. The keys they replace on the screen step aside. [onExport] is the wide editor's save;
+ * null opens the phone's export sheet.
+ */
+@Composable
+private fun EditNativeBar(ui: EditUiState, actions: EditActions, player: PlayerState, onExport: (() -> Unit)?) {
+    val video = ui.item
+    val export = stringResource(Res.string.edit_export)
+    val undo = stringResource(Res.string.edit_undo)
+    val redo = stringResource(Res.string.edit_redo)
+    val sound = stringResource(if (player.muted) Res.string.edit_muted else Res.string.edit_sound)
+    NativeItems(
+        buildList {
+            if (video != null) {
+                add(
+                    NativeBarItem(
+                        TestTags.EditExport,
+                        export,
+                        BarIcon.Export,
+                        prominent = true,
+                        enabled = ui.exporting == null,
+                        priority = BarPriority.High,
+                    )
+                )
+            }
+            add(NativeBarItem(TestTags.EditUndo, undo, BarIcon.Undo, enabled = ui.canUndo, group = 1))
+            add(NativeBarItem(TestTags.EditRedo, redo, BarIcon.Redo, enabled = ui.canRedo, group = 1))
+            if (video?.hasAudio == true) {
+                val icon = if (player.muted) BarIcon.SoundOff else BarIcon.SoundOn
+                add(NativeBarItem(TestTags.EditSound, sound, icon, bottom = true, priority = BarPriority.Low))
+            }
+        }
+    ) { id ->
+        when (id) {
+            TestTags.EditExport -> onExport?.invoke() ?: actions.openSheet(EditSheet.EXPORT)
+            TestTags.EditUndo -> actions.undo()
+            TestTags.EditRedo -> actions.redo()
+            TestTags.EditSound -> player.muted = !player.muted
+        }
+    }
+}
+
+/**
  * Sound on or off, for playback and the export alike; a video recorded without the microphone has nothing to mute, so
- * there is no key.
+ * there is no key. Where the bars are native it is their item instead.
  */
 @Composable
 private fun SoundToggle(video: VideoItem?, player: PlayerState) {
-    if (video?.hasAudio != true) return
+    if (video?.hasAudio != true || LocalNativeChrome.current != null) return
     // A top-bar key like the shot and export ones beside it, the same height.
     TopChip(
         if (player.muted) stringResource(Res.string.edit_muted) else stringResource(Res.string.edit_sound),
@@ -1435,7 +1488,9 @@ private fun ToolChips(ui: EditUiState, video: VideoItem, actions: EditActions, o
         } else {
             Pill(stringResource(Res.string.edit_add_shot), onClick = { actions.openSheet(EditSheet.SHOT) })
         }
-        TopChip(stringResource(LocalExportWording.current.save), onClick = onExport, primary = true)
+        if (LocalNativeChrome.current == null) {
+            TopChip(stringResource(LocalExportWording.current.save), onClick = onExport, primary = true)
+        }
     }
 }
 

@@ -61,9 +61,13 @@ import app.onlyshots.core.designsystem.CgStroke
 import app.onlyshots.core.designsystem.CgTheme
 import app.onlyshots.core.designsystem.caps
 import app.onlyshots.core.designsystem.component.BackButton
+import app.onlyshots.core.designsystem.component.BarIcon
 import app.onlyshots.core.designsystem.component.CgIcon
 import app.onlyshots.core.designsystem.component.HairlineGrid
 import app.onlyshots.core.designsystem.component.IconCircleButton
+import app.onlyshots.core.designsystem.component.LocalNativeChrome
+import app.onlyshots.core.designsystem.component.NativeBarItem
+import app.onlyshots.core.designsystem.component.NativeItems
 import app.onlyshots.core.designsystem.component.Pill
 import app.onlyshots.core.designsystem.component.ReadingTile
 import app.onlyshots.core.designsystem.component.RecordButton
@@ -130,8 +134,17 @@ internal fun TakeTopRow(take: TakeInputs, back: Boolean) {
         )
         Spacer(Modifier.weight(1f))
         // Start, pre-roll and stop rules, as the phone's gear: they need a machine and a camera, and are closed
-        // mid-shot.
-        KeyIn(take.state.hasData && !take.state.recording && !take.state.noCamera) {
+        // mid-shot. Where the bars are native (iPhone Duo) the gear is their item.
+        val settings = take.state.hasData && !take.state.recording && !take.state.noCamera
+        val native = LocalNativeChrome.current != null
+        val settingsTitle = stringResource(Res.string.record_settings)
+        NativeItems(
+            if (settings) listOf(NativeBarItem(TestTags.RecordSettings, settingsTitle, BarIcon.Settings))
+            else emptyList()
+        ) {
+            take.onSettings()
+        }
+        KeyIn(settings && !native) {
             IconCircleButton(
                 CgIcons.Settings,
                 stringResource(Res.string.record_settings),

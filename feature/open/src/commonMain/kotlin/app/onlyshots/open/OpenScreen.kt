@@ -73,9 +73,13 @@ import app.onlyshots.core.designsystem.CgStroke
 import app.onlyshots.core.designsystem.CgTheme
 import app.onlyshots.core.designsystem.caps
 import app.onlyshots.core.designsystem.component.BackButton
+import app.onlyshots.core.designsystem.component.BarIcon
+import app.onlyshots.core.designsystem.component.BarPriority
 import app.onlyshots.core.designsystem.component.CgIcon
 import app.onlyshots.core.designsystem.component.CgSheet
 import app.onlyshots.core.designsystem.component.HeaderBack
+import app.onlyshots.core.designsystem.component.NativeBarItem
+import app.onlyshots.core.designsystem.component.NativeItems
 import app.onlyshots.core.designsystem.component.OnlyShotsMark
 import app.onlyshots.core.designsystem.component.SheetHeader
 import app.onlyshots.core.designsystem.component.TwoPane
@@ -91,6 +95,7 @@ import app.onlyshots.core.resources.open_change
 import app.onlyshots.core.resources.open_choose
 import app.onlyshots.core.resources.open_dismiss
 import app.onlyshots.core.resources.open_drop_to_use
+import app.onlyshots.core.resources.open_editor
 import app.onlyshots.core.resources.open_from_file
 import app.onlyshots.core.resources.open_from_machine
 import app.onlyshots.core.resources.open_from_machine_detail
@@ -162,6 +167,24 @@ fun OpenScreen(
     var choosingSource by remember { mutableStateOf(false) }
     var dragging by remember { mutableStateOf(false) }
     val layout = LocalWindowLayout.current
+    // Where the bars are native (iPhone Duo): open the editor (prominent) and, at the far end, a shot from a file.
+    val openTitle = stringResource(Res.string.open_editor)
+    val fileTitle = stringResource(Res.string.open_from_file)
+    NativeItems(
+        listOf(
+            NativeBarItem(
+                TestTags.OpenEditor,
+                openTitle,
+                BarIcon.Open,
+                prominent = true,
+                enabled = picked != null && shot != null,
+                priority = BarPriority.High,
+            ),
+            NativeBarItem(TestTags.OpenFromFile, fileTitle, BarIcon.File, bottom = true, priority = BarPriority.Low),
+        )
+    ) { id ->
+        if (id == TestTags.OpenEditor) viewModel.openWith(onOpen) else pickFile()
+    }
     Box(Modifier.fillMaxSize()) {
         OpenBody(
             picked = picked,
