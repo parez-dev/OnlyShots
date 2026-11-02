@@ -14,11 +14,11 @@ object AppStores {
     const val PLAY_PACKAGE = "dev.parez.onlyshots"
 
     /**
-     * The App Store's numeric id (apps.apple.com/app/id…), once the app is published. Placeholder: while null, no App
-     * Store button shows anywhere. Also set in `resources/open/index.html` and the `apple-itunes-app` meta tag in
-     * `index.html`.
+     * The App Store's numeric id (apps.apple.com/app/id…), the app's Apple ID in App Store Connect. Null hides every
+     * App Store button. Also set in `resources/open/index.html`, the `apple-itunes-app` meta tag in `index.html` and
+     * the link on `resources/unsupported/index.html`.
      */
-    val APP_STORE_ID: String? = null
+    val APP_STORE_ID: String? = "6829853464"
 
     const val PLAY_URL = "https://play.google.com/store/apps/details?id=$PLAY_PACKAGE"
 
