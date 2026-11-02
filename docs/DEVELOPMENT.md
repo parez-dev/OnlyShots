@@ -151,7 +151,7 @@ accent, `#3A3A38` hairlines, square corners. IBM Plex Mono SemiBold names and co
   `:core:resources` into APK assets. Screenshots get same files on classpath.
 - **iOS:** `app/iosApp/project.yml` makes Xcode project (`xcodegen`). Imports `:app:shared` as Swift export module
   `OnlyShotsApp`, built by its pre-build phase (`embedSwiftExportForXcode`).
-- **Secrets:** none in repo. CI secrets: `VERCEL_TOKEN` (org secret, web deploy); Play release (repo secrets, see
+- **Secrets:** none in repo. CI secrets: `VERCEL_TOKEN` (org secret, web deploy); Play and App Store release (repo secrets, see
   below).
 
 ## Version and release
@@ -185,7 +185,13 @@ desktop DMG, MSI, DEB on each OS. Publishes GitHub Release with notes (desktop o
   `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`, `PLAY_SERVICE_ACCOUNT_JSON` (service account with Android Publisher
   API, invited in Play Console with release rights). Play API rejects app with no bundle yet: first one by hand from
   run's `android-release` artifact. Same version twice fails: bump.
-- **iOS:** manual for now. Xcode archive to TestFlight.
+- **iOS:** `release.yml`'s `ios` job archives, exports and uploads to App Store Connect, signing as an App Store
+  Connect API key rather than a keychain certificate: `-allowProvisioningUpdates` with `-authenticationKey*` makes the
+  distribution certificate and the App Store profile itself. Repo secrets: `APPSTORE_API_KEY_P8` (`base64 -i
+  AuthKey_XXXX.p8`), `APPSTORE_API_KEY_ID`, `APPSTORE_API_ISSUER_ID` (App Store Connect › Users and Access ›
+  Integrations, App Manager or better), `APPLE_TEAM_ID` (Membership page). The app record must exist for
+  `dev.parez.onlyshots` before a build is accepted, and the same build number twice fails: bump. First one can go by
+  hand from the run's `ios-release` artifact.
 
 ## Desktop editor
 
@@ -316,6 +322,12 @@ both cases the API Play names is one the app never calls.
 - Reviewers have no machine: tell them about "try a sample shot" and **simulate shot**.
 - **iPhone Duo:** screenshots needed from April 2027. Scene manifest in `Info.plist` must stay (else unfold kicks
   app out). Fold comes from Swift `ComposeHostController` (`NativeShell.swift`).
+- **Media.** Screenshots are built by `design/store/` (`appstore/`, its README has the slot table). The product
+  page header, a 21:9 video slot Apple added on 5 October 2026, is built by `design/header/` from a real recording
+  exported at 16:9 / 4K; it is marketing art with no device-capture rule, it loops, and it is muted by default.
+  The app preview (886 x 1920, 15-30 s) **is** device capture, so it is a screen recording off the phone;
+  `design/header/README.md` holds its spec and shot list. Sizes come from Apple's own pages, which the
+  third-party guides disagree with.
 
 ## Open questions
 

@@ -2,77 +2,80 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>CFBundleIdentifier</key>
-    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-    <key>CFBundleName</key>
-    <string>$(PRODUCT_NAME)</string>
-    <key>CFBundleExecutable</key>
-    <string>$(EXECUTABLE_NAME)</string>
-    <key>CFBundlePackageType</key>
-    <string>APPL</string>
-    <key>CFBundleInfoDictionaryVersion</key>
-    <string>6.0</string>
-    <key>CFBundleShortVersionString</key>
-    <string>$(MARKETING_VERSION)</string>
-    <key>CFBundleVersion</key>
-    <string>$(CURRENT_PROJECT_VERSION)</string>
-    <key>UILaunchScreen</key>
-    <dict>
-        <!-- The splash's first frame: espresso and the finished mark, centred at 154 pt like the app's splash, which
-             carries on from it (design/splash/SPEC.md). -->
-        <key>UIColorName</key>
-        <string>LaunchBackground</string>
-        <key>UIImageName</key>
-        <string>LaunchMark</string>
-        <key>UIImageRespectsSafeAreaInsets</key>
-        <false/>
-    </dict>
-    <key>CFBundleDisplayName</key>
-    <string>OnlyShots</string>
-    <key>NSCameraUsageDescription</key>
-    <string>OnlyShots films your espresso shot.</string>
-    <key>NSMicrophoneUsageDescription</key>
-    <string>OnlyShots records the sound of your shot with the video. You can mute it in the editor.</string>
-    <key>NSLocalNetworkUsageDescription</key>
-    <string>OnlyShots reads the shot from your espresso machine on your home network.</string>
-    <key>NSBonjourServices</key>
-    <array>
-        <string>_http._tcp</string>
-    </array>
-    <key>NSBluetoothAlwaysUsageDescription</key>
-    <string>OnlyShots reads weight from your Bluetooth scale and pressure sensor.</string>
-    <key>NSPhotoLibraryAddUsageDescription</key>
-    <string>Save the videos you make to Photos.</string>
-    <!-- iOS 26: an export goes on in the background with the system's progress (ContinuedExport.swift), one task per
-         video. -->
-    <key>BGTaskSchedulerPermittedIdentifiers</key>
-    <array>
-        <string>$(PRODUCT_BUNDLE_IDENTIFIER).export.*</string>
-    </array>
-    <!-- No encryption beyond the system's: the app only talks plain HTTP and WebSocket on the local network. -->
-    <key>ITSAppUsesNonExemptEncryption</key>
-    <false/>
-    <key>NSAppTransportSecurity</key>
-    <dict>
-        <!-- Machines speak plain HTTP and ws:// on the local network. -->
-        <key>NSAllowsLocalNetworking</key>
-        <true/>
-    </dict>
-    <!-- Compose Multiplatform checks for this: without it the UI is capped at 60 Hz. -->
-    <key>CADisableMinimumFrameDurationOnPhone</key>
-    <true/>
-    <key>UIRequiresFullScreen</key>
-    <false/>
-    <key>UIApplicationSceneManifest</key>
-    <dict>
-        <key>UIApplicationSupportsMultipleScenes</key>
-        <false/>
-    </dict>
-    <key>UISupportedInterfaceOrientations</key>
-    <array>
-        <string>UIInterfaceOrientationPortrait</string>
-        <string>UIInterfaceOrientationLandscapeLeft</string>
-        <string>UIInterfaceOrientationLandscapeRight</string>
-    </array>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>$(PRODUCT_BUNDLE_IDENTIFIER).export.*</string>
+	</array>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>CFBundleDisplayName</key>
+	<string>OnlyShots</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>OnlyShots reads weight from your Bluetooth scale and pressure sensor.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_http._tcp</string>
+	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>OnlyShots films your espresso shot.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>OnlyShots reads the shot from your espresso machine on your home network.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>OnlyShots records the sound of your shot with the video. You can mute it in the editor.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Save the videos you make to Photos.</string>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+	</dict>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIColorName</key>
+		<string>LaunchBackground</string>
+		<key>UIImageName</key>
+		<string>LaunchMark</string>
+		<key>UIImageRespectsSafeAreaInsets</key>
+		<false/>
+	</dict>
+	<key>UIRequiresFullScreen</key>
+	<false/>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<!-- iPad multitasking needs all four, and App Store Connect rejects the bundle without them (90474). The
+	     iPhone key above stays at three: a phone has no reason to stand on its head. The record screen locks
+	     the screen while a take runs either way (LockOrientation, through the app delegate). -->
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
 </dict>
 </plist>

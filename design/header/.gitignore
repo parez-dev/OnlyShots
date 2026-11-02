@@ -1,0 +1,6 @@
+# The 4K master out of the editor and the finished header: tens to hundreds of megabytes, and App Store Connect's
+# Asset Library is where approved assets live. The repo keeps furniture.html and build.py.
+out/
+*.mp4
+*.mov
+*.m4v

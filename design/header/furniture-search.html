@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <!-- The Instrument layer for the search results banner, 3:2 at 3240 x 2160. Same build as furniture.html and the
+         same rule: its alpha must survive, because ffmpeg composites it onto the footage.
+         A search result is seen small, so the type is larger against the frame than the header's and the line under
+         it is shorter. The graph sits upper right in the export, so the copy takes the lower left. -->
+    <style>
+      :root { --ink: 11, 11, 11; --bone: #e8e6e1; --signal: #ff5a1f; --mute: #a3a19b; }
+      html, body { margin: 0; background: transparent; }
+      .f { position: relative; width: 3240px; height: 2160px; overflow: hidden; }
+      .grid { position: absolute; inset: 0;
+              background-image: linear-gradient(rgba(232, 230, 225, .04) 2px, transparent 2px),
+                                linear-gradient(90deg, rgba(232, 230, 225, .04) 2px, transparent 2px);
+              background-size: 128px 128px; }
+      /* Ink from the left, where the copy is, and only a low lift from the foot. Rising far up the frame instead
+         would dim the graph's own readings, the card reaching further down than the copy begins. */
+      .scrim { position: absolute; inset: 0;
+               background: linear-gradient(90deg, rgba(var(--ink), .95) 0%, rgba(var(--ink), .82) 24%,
+                           rgba(var(--ink), .38) 42%, rgba(var(--ink), 0) 56%),
+                           linear-gradient(0deg, rgba(var(--ink), .55) 0%, rgba(var(--ink), 0) 24%); }
+      .copy { position: absolute; left: 180px; bottom: 170px; width: 2400px; }
+      .logo { display: block; height: 120px; margin-bottom: 76px; }
+      h1 { font: 600 190px/1.12 "IBM Plex Mono", ui-monospace, monospace; letter-spacing: -.02em;
+           color: var(--bone); margin: 0 0 44px; white-space: pre-line; }
+      .rule { width: 520px; height: 4px; background: var(--signal); margin: 0 0 44px; }
+      p { font: 400 72px/1.4 "IBM Plex Sans", system-ui, sans-serif; color: var(--mute); margin: 0; }
+    </style>
+  </head>
+  <body>
+    <div class="f">
+      <div class="grid"></div>
+      <div class="scrim"></div>
+      <div class="copy">
+        <img class="logo" alt="OnlyShots" src="../logo/kit/variants/onlyshots-horizontal-white.svg" />
+        <h1>FILM THE SHOT.
+KEEP THE DATA.</h1>
+        <div class="rule"></div>
+        <p>The live graph from your machine and scale, drawn over the video.</p>
+      </div>
+    </div>
+  </body>
+</html>

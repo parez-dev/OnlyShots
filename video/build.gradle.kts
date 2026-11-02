@@ -159,7 +159,9 @@ tasks.withType<KotlinNativeSimulatorTest>().configureEach {
     )
 }
 
-// The desktop export test reads the spike clip from the repository.
+// The desktop export test reads the spike clip from the repository. HeaderMasterTest, which renders the App Store
+// header's master through the same exporter, is handed its input from the command line instead and skips without it
+// (design/header/README.md); -D on the Gradle command line reaches the Gradle JVM, not this one, so pass it through.
 tasks
     .withType<Test>()
     .matching { it.name == "desktopTest" }
@@ -168,4 +170,9 @@ tasks
             "onlyshots.spikeClip",
             layout.projectDirectory.file("testdata/spike_alignment.mp4").asFile.absolutePath,
         )
+        for (name in listOf("video", "shot", "out", "shotStartUs", "durationUs", "rect", "title")) {
+            providers.systemProperty("onlyshots.header.$name").orNull?.let {
+                systemProperty("onlyshots.header.$name", it)
+            }
+        }
     }

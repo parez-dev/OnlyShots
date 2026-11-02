@@ -41,25 +41,36 @@ editor. `render.py` (`PHOTOS`) swaps it in for the canvas's drawn camera.
 
 ## Files in `appstore/`
 
-Sizes from Apple's own spec, which the third-party guides disagree with:
-<https://developer.apple.com/help/app-store-connect/reference/screenshot-specifications/>. Required are one iPhone
-with Dynamic Island (medium) and, since the app runs on iPad, one iPad 13-inch; the large iPhone set is the highest
-resolution, which App Store Connect scales the smaller slots down from. Duo is required from April 2027 on
-iOS 27.1+ (docs/DEVELOPMENT.md). Apple allows ten per slot.
+**One folder per App Store Connect screenshot tab, not per device shape.** This app is offered three —
+"iPhone with Dynamic Island (medium display)", "iPhone Duo" and "iPad 13-inch display" — and each takes up to ten
+pictures in a single sequence whatever their shape. The Duo tab's own hint lists 1398 x 2034 and 2853 x 2007 side
+by side, so folded and unfolded belong together; the iPad tab takes both orientations the same way.
 
-| Folder | Size | App Store slot | Screen |
-| --- | --- | --- | --- |
-| `iphone-6.9/01–06.png` | 1320 × 2868 | iPhone, Dynamic Island, large | phone board |
-| `iphone-6.1/01–06.png` | 1179 × 2556 | iPhone, Dynamic Island, medium — **required** | phone board |
-| `ipad-13/01–04.png` | 2064 × 2752 | iPad 13-inch, portrait — **required** | `-M` board |
-| `ipad-13-landscape/01–04.png` | 2752 × 2064 | iPad 13-inch, landscape | `-B` board |
-| `duo-outer/01–06.png` | 1398 × 2034 | iPhone Duo, outer display | phone board |
-| `duo-inner/01–04.png` | 2007 × 2853 | iPhone Duo, inner display | `-M` board |
+| Folder | Files | Size | Screen | Frame |
+| --- | --- | --- | --- | --- |
+| `iphone/` | 01–06 | 1206 × 2622 | phone board | iPhone 18 Pro |
+| `iphone-duo/` | 01–03 | 1398 × 2034 | **simulator capture**, outer | Duo cover |
+| | 04–06 | 2853 × 2007 | **simulator capture**, inner | Duo inner |
+| `ipad-13/` | 01–04 | 2048 × 2732 | `-M` board | iPad Pro 11 |
+| | 05–08 | 2732 × 2048 | `-B` board | iPad Pro 11 |
 
-No artboards of their own: a device box keeps its board's aspect and bleeds off the frame's bottom edge, so any
-frame size can hold an existing board. Duo's outer display is phone-shaped and its inner one is the larger, squarer
-screen, so they take the phone and `-M` boards. The frames carry the Play headlines of the same screens.
+No 6.9-inch and no 11-inch sets: App Store Connect offers a tab for neither, and it scales the larger iPhone slots
+down from the medium one.
 
-`compose.py`'s `APPSTORE` table holds one row per slot; `frame w × scale` has to equal Apple's pixel size exactly,
-and `shoot` asserts that on every write, because a wrong scale is otherwise only caught by App Store Connect
-refusing the upload.
+**Device frames** live in `frames/`, exported from the App Store template's Figma file
+(`tR7IFIYoSGarqgLDOsF8re`, pages *iPhone*, *iPad …*, *iPhone Duo …*; each page carries a `… device / …` symbol
+whose raw image is the bezel with its screen cut out). `compose.py`'s `Device` table holds each one's pixel size
+and the cut-out inside it. The iPhone's is the whole component rather than a cut-out, so its picture is drawn over
+the placeholder screen instead, with a corner radius to match.
+
+A frame need not match its slot's shape: it is drawn at its own aspect inside the slot's canvas, which is why the
+11-inch iPad bezel frames the 13-inch slots without any stretching. A screen that is not the frame's shape
+letterboxes onto ink rather than cropping — on an ink UI the bars cannot be seen, and no part of the app is lost.
+
+**The Duo slots use real simulator captures**, not artboards: its side column is iOS's own bar on a hinged device
+and exists in no artboard. Run `tools/ios-screenshots/capture.sh` first — the pictures are git-ignored, and those
+rows are skipped with a message when they are not there.
+
+`compose.py`'s `FRAMED` table holds one row per group, keyed by the tab it writes into and the number it starts
+at; `frame w × scale` has to equal Apple's pixel size exactly, and `shoot` asserts that on every write, because a
+wrong scale is otherwise only caught by App Store Connect refusing the upload.
