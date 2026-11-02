@@ -28,6 +28,17 @@ targets:
         # The Kotlin module (Swift export: `import OnlyShotsApp`) is built and put in the products by the Gradle phase
         # below, which writes outside the sandbox.
         ENABLE_USER_SCRIPT_SANDBOXING: NO
+        # Signing belongs here, not in Xcode's Signing pane: `xcodegen generate` rewrites the project before every
+        # build, so anything ticked there is lost, and xcodegen's own default is CODE_SIGN_IDENTITY "iPhone
+        # Developer" in both configurations — which quietly development-signs a release archive and has App Store
+        # Connect refuse it with 90035.
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: L6H92C48TD
+      configs:
+        Debug:
+          CODE_SIGN_IDENTITY: "Apple Development"
+        Release:
+          CODE_SIGN_IDENTITY: "Apple Distribution"
     preBuildScripts:
       - name: Build the Kotlin module
         basedOnDependencyAnalysis: false
