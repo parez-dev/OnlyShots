@@ -2,7 +2,7 @@
   "applinks": {
     "details": [
       {
-        "appIDs": ["REPLACE_WITH_TEAM_ID.dev.parez.onlyshots"],
+        "appIDs": ["L6H92C48TD.dev.parez.onlyshots"],
         "components": [{ "/": "/open*", "comment": "the web editor's App Store badge and shared links open the app" }]
       }
     ]

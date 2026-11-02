@@ -21,6 +21,10 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: dev.parez.onlyshots
+        # Signed by the personal team; the same id is the AASA file's appID prefix.
+        DEVELOPMENT_TEAM: L6H92C48TD
+        # The App Store category, which the store reads from the build.
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.food-and-drink
         INFOPLIST_FILE: iosApp/Info.plist
         CODE_SIGN_ENTITLEMENTS: iosApp/iosApp.entitlements
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon

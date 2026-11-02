@@ -2,11 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<!-- onlyshots.vercel.app/open opens the app (Universal Links), checked against the site's
-	     .well-known/apple-app-site-association. -->
+	<!-- /open opens the app (Universal Links), checked against each site's
+	     .well-known/apple-app-site-association. Both hosts serve the same site. -->
 	<key>com.apple.developer.associated-domains</key>
 	<array>
 		<string>applinks:onlyshots.vercel.app</string>
+		<string>applinks:onlyshots.parez.dev</string>
 	</array>
 </dict>
 </plist>
