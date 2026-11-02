@@ -10,6 +10,18 @@ app whose pitch is "export matches preview", nothing else is as strong.
 - **Spec** (read 2026-10-29):
   <https://developer.apple.com/help/app-store-connect/reference/app-information/creative-assets-specifications/> —
   21:9 at 3840 × 1646 (or 16:9 at 5244 × 2950), 30 or 60 fps, 5 to 30 s, `.mov` / `.m4v` / `.mp4`.
+## The crop
+
+**The product page crops the header to the device's aspect.** On a phone only the middle ~81 % of the width
+survives; a narrower layout keeps as little as 62 %, which is x 735 to 3105 of 3840. Anything near an edge is lost
+— the first cut of this header lost the "F" of FILM and the graph's `weight flow` legend.
+
+So the header's furniture is the logo alone, centred: the footage and the real graph carry it, and the words live
+on the screenshots and the search banner, which nothing crops. Keep anything new inside that middle 2370 px.
+
+The graph itself is burned into the master by the editor, so where it sits is a recording-time decision: placed
+far right it will be clipped whatever the furniture does.
+
 ## The two slots
 
 | Slot | Size | Cut from the master | Audio |

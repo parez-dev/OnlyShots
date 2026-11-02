@@ -4,10 +4,15 @@
     <meta charset="utf-8" />
     <!-- The still Instrument layer that build.py lays over the exported shot, at the header's own 3840 x 1646.
          Shot with a transparent background: unlike every other page under design/, this one's alpha must survive,
-         because ffmpeg composites it onto the footage. Fonts come from the app's own resources, not Google, so the
-         render needs no network. -->
+         because ffmpeg composites it onto the footage.
+
+         The logo alone, centred. The product page crops this asset to the device's aspect — on a phone only the
+         middle ~81 % of the width survives, and a narrower layout keeps as little as 62 % — so anything near an
+         edge is lost, and the graph the editor burns in already spans most of the safe width. The footage and that
+         real graph carry the header; the words live on the screenshots and the search banner, which nothing crops.
+         Keep new furniture inside the middle 2370 px (x 735 to 3105) or expect to lose it. -->
     <style>
-      :root { --ink: 11, 11, 11; --bone: #e8e6e1; --signal: #ff5a1f; --mute: #a3a19b; }
+      :root { --ink: 11, 11, 11; }
       html, body { margin: 0; background: transparent; }
       .f { position: relative; width: 3840px; height: 1646px; overflow: hidden; }
       /* The hairline grid of the store art, faint enough to read as texture over moving footage. */
@@ -15,29 +20,18 @@
               background-image: linear-gradient(rgba(232, 230, 225, .04) 2px, transparent 2px),
                                 linear-gradient(90deg, rgba(232, 230, 225, .04) 2px, transparent 2px);
               background-size: 128px 128px; }
-      /* Ink falling off to the right, so the copy reads over the pour without hiding it. */
+      /* Just enough ink under the mark for it to hold over a lit cup. */
       .scrim { position: absolute; inset: 0;
-               background: linear-gradient(90deg, rgba(var(--ink), .94) 0%, rgba(var(--ink), .88) 26%,
-                           rgba(var(--ink), .55) 46%, rgba(var(--ink), 0) 64%); }
-      .copy { position: absolute; left: 200px; top: 50%; transform: translateY(-50%); width: 1500px; }
-      .logo { display: block; height: 104px; margin-bottom: 72px; }
-      h1 { font: 600 152px/1.14 "IBM Plex Mono", ui-monospace, monospace; letter-spacing: -.02em;
-           color: var(--bone); margin: 0 0 40px; white-space: pre-line; }
-      .rule { width: 420px; height: 3px; background: var(--signal); margin: 0 0 40px; }
-      p { font: 400 58px/1.45 "IBM Plex Sans", system-ui, sans-serif; color: var(--mute); margin: 0; }
+               background: linear-gradient(0deg, rgba(var(--ink), .72) 0%, rgba(var(--ink), .3) 14%,
+                           rgba(var(--ink), 0) 26%); }
+      .logo { position: absolute; left: 50%; bottom: 96px; transform: translateX(-50%); display: block; height: 112px; }
     </style>
   </head>
   <body>
     <div class="f">
       <div class="grid"></div>
       <div class="scrim"></div>
-      <div class="copy">
-        <img class="logo" alt="OnlyShots" src="../logo/kit/variants/onlyshots-horizontal-white.svg" />
-        <h1>FILM THE SHOT.
-KEEP THE DATA.</h1>
-        <div class="rule"></div>
-        <p>The live graph from your machine and scale, drawn over the video. Exported exactly as you see it.</p>
-      </div>
+      <img class="logo" alt="OnlyShots" src="../logo/kit/variants/onlyshots-horizontal-white.svg" />
     </div>
   </body>
 </html>
