@@ -34,11 +34,10 @@ targets:
         # Connect refuse it with 90035.
         CODE_SIGN_STYLE: Automatic
         DEVELOPMENT_TEAM: L6H92C48TD
-      configs:
-        Debug:
-          CODE_SIGN_IDENTITY: "Apple Development"
-        Release:
-          CODE_SIGN_IDENTITY: "Apple Distribution"
+        # Automatic signing signs the archive for development on purpose and re-signs for distribution at export
+        # time, so the identity must not be pinned to Apple Distribution here: Xcode refuses the archive outright
+        # with "conflicting provisioning settings". This only replaces xcodegen's legacy "iPhone Developer".
+        CODE_SIGN_IDENTITY: "Apple Development"
     preBuildScripts:
       - name: Build the Kotlin module
         basedOnDependencyAnalysis: false
