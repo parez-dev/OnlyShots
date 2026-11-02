@@ -214,7 +214,8 @@ tools/deploy-web.sh                                             # build here, pu
 - **Session only:** in-memory files (`WebFiles`). Reload = empty. Picked video stays browser `File`.
 - **`media.js`:** browser half. File dialog, drop, play, thumbnails, sound, luma, export decode/encode. Uses
   [Mediabunny](https://mediabunny.dev) (MPL-2.0) and WebCodecs.
-- **Export:** 1080 × 1920, silent, on GPU through own WebGL. Needs `VideoEncoder`: Chrome, Edge, Safari 16.4+.
+- **Export:** 1080 × 1920, on GPU through own WebGL. Needs `VideoEncoder`: Chrome, Edge, Safari 16.4+. The clip's
+  sound is decoded and re-encoded as AAC when the browser has an AAC encoder; without one the picture goes alone.
   Frames go straight into Skia memory. Nothing uploaded.
 - **`js("…")` code:** must be expression both targets take. No `??`, no `?.`.
 

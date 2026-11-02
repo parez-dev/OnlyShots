@@ -426,8 +426,8 @@ private val webHost =
     OpenHost(
         headerNote = "runs in your browser, nothing is uploaded",
         videosNote =
-            "Exports at 1080p without sound, in Chrome, Edge or Safari 16.4+. A .mov from an iPhone holds HEVC, " +
-                "which not every browser can decode.",
+            "Exports at 1080p in Chrome, Edge or Safari 16.4+. A .mov from an iPhone holds HEVC, which not " +
+                "every browser can decode.",
     )
 
 private val desktopHost =

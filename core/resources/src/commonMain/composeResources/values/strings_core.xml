@@ -78,7 +78,7 @@
     <string name="core_desktop_header_note">runs on this computer, nothing is uploaded</string>
     <string name="core_desktop_videos_note">Exports at the video's full quality, with sound, into Movies/OnlyShots.</string>
     <string name="core_web_header_note">runs in your browser, nothing is uploaded</string>
-    <string name="core_web_videos_note">Exports at 1080p without sound, in Chrome, Edge or Safari 16.4+. A .mov from an iPhone holds HEVC, which not every browser can decode.</string>
+    <string name="core_web_videos_note">Exports at 1080p in Chrome, Edge or Safari 16.4+. A .mov from an iPhone holds HEVC, which not every browser can decode.</string>
     <string name="core_web_file_gone">that file is gone</string>
     <string name="core_version">OnlyShots %1$s</string>
     <string name="core_less">less</string>
