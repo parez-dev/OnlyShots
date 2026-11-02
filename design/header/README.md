@@ -1,4 +1,4 @@
-# Product page header video
+# Product page header and search results video
 
 Apple added product page headers on 5 October 2026: a 21:9 slot above the product page taking an image or a video,
 separate from screenshots and app previews. It is marketing art, it loops forever, and it is muted until someone
@@ -10,6 +10,19 @@ app whose pitch is "export matches preview", nothing else is as strong.
 - **Spec** (read 2026-10-29):
   <https://developer.apple.com/help/app-store-connect/reference/app-information/creative-assets-specifications/> —
   21:9 at 3840 × 1646 (or 16:9 at 5244 × 2950), 30 or 60 fps, 5 to 30 s, `.mov` / `.m4v` / `.mp4`.
+## The two slots
+
+| Slot | Size | Cut from the master | Audio |
+| --- | --- | --- | --- |
+| `--slot header` | 3840 × 1646, 21:9 | its **height**, `--top` | kept: muted by default but a viewer can unmute |
+| `--slot search` | 3240 × 2160, 3:2 | its **width**, `--left` | dropped: search audio can never be unmuted |
+
+Apple also accepts 16:9 at 5244 × 2950 for both, which would mean upscaling a 4K master by 1.37; 3:2 at
+3240 × 2160 cuts the width at native resolution instead, and sits inside the 1920 × 1280 to 3840 × 2560 range.
+Each slot has its own furniture page: the header's copy block would not fit a slot seen at thumbnail size, and the
+search banner needs its scrim from the left rather than the foot, the graph card reaching further down the frame
+than the copy begins.
+
 - **Build:** `python3 design/header/build.py <master.mp4> --in 12 --out 34` (ffmpeg, and Google Chrome or the one
   Playwright keeps for `tools/web-smoke`, which `design/store/render.py` finds). Writes
   `design/header/out/header-3840x1646.mp4`.
