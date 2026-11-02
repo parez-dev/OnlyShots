@@ -151,7 +151,7 @@ accent, `#3A3A38` hairlines, square corners. IBM Plex Mono SemiBold names and co
   `:core:resources` into APK assets. Screenshots get same files on classpath.
 - **iOS:** `app/iosApp/project.yml` makes Xcode project (`xcodegen`). Imports `:app:shared` as Swift export module
   `OnlyShotsApp`, built by its pre-build phase (`embedSwiftExportForXcode`).
-- **Secrets:** none in repo. CI secrets: `VERCEL_TOKEN` (org secret, web deploy); Play release (repo secrets, see
+- **Secrets:** none in repo. CI secrets: `VERCEL_TOKEN` (org secret, web deploy); Play and App Store release (repo secrets, see
   below).
 
 ## Version and release
@@ -185,7 +185,13 @@ desktop DMG, MSI, DEB on each OS. Publishes GitHub Release with notes (desktop o
   `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`, `PLAY_SERVICE_ACCOUNT_JSON` (service account with Android Publisher
   API, invited in Play Console with release rights). Play API rejects app with no bundle yet: first one by hand from
   run's `android-release` artifact. Same version twice fails: bump.
-- **iOS:** manual for now. Xcode archive to TestFlight.
+- **iOS:** `release.yml`'s `ios` job archives, exports and uploads to App Store Connect, signing as an App Store
+  Connect API key rather than a keychain certificate: `-allowProvisioningUpdates` with `-authenticationKey*` makes the
+  distribution certificate and the App Store profile itself. Repo secrets: `APPSTORE_API_KEY_P8` (`base64 -i
+  AuthKey_XXXX.p8`), `APPSTORE_API_KEY_ID`, `APPSTORE_API_ISSUER_ID` (App Store Connect › Users and Access ›
+  Integrations, App Manager or better), `APPLE_TEAM_ID` (Membership page). The app record must exist for
+  `dev.parez.onlyshots` before a build is accepted, and the same build number twice fails: bump. First one can go by
+  hand from the run's `ios-release` artifact.
 
 ## Desktop editor
 
