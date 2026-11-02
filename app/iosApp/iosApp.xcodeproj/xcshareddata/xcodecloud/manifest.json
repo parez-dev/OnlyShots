@@ -1,0 +1,9 @@
+{
+  "id" : "bc0371f8-6d6b-4087-9418-052f7f5e858d",
+  "targets" : [
+    {
+      "id" : "30b5f35e-cd98-4f5f-b28e-e78a43884cf9",
+      "name" : "iosApp"
+    }
+  ]
+}
