@@ -117,9 +117,10 @@ object WebMedia {
         zoom: Double,
         offsetX: Double,
         offsetY: Double,
+        withSound: Boolean,
     ): Double {
         if (!hasVideoEncoder()) throw NoWebCodecsException()
-        return cgExportStart(path, width, height, startSeconds, endSeconds, zoom, offsetX, offsetY)
+        return cgExportStart(path, width, height, startSeconds, endSeconds, zoom, offsetX, offsetY, withSound)
             .await<JsNumber>()
             .toDouble()
     }
@@ -204,7 +205,8 @@ private fun cgExportStart(
     zoom: Double,
     offsetX: Double,
     offsetY: Double,
-): Promise<JsNumber> = js("globalThis.cg.exportStart(path, w, h, start, end, zoom, offsetX, offsetY)")
+    sound: Boolean,
+): Promise<JsNumber> = js("globalThis.cg.exportStart(path, w, h, start, end, zoom, offsetX, offsetY, sound)")
 
 private fun cgExportNext(): Promise<JsNumber> = js("globalThis.cg.exportNext()")
 

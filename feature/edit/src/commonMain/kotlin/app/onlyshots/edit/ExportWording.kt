@@ -77,7 +77,7 @@ data class ExportWording(
                 footer = Res.string.edit_desktop_footer,
             )
 
-        /** The browser's export is 1080p and silent, and its one way out is the download. */
+        /** The browser's export is 1080p, and its one way out is the download. */
         val Web =
             ExportWording(
                 save = Res.string.edit_web_save,
@@ -86,7 +86,6 @@ data class ExportWording(
                 saved = Res.string.edit_web_saved,
                 next = Res.string.edit_open_another,
                 footer = Res.string.edit_web_footer,
-                sound = false,
                 leave = Res.string.edit_export_leave_web,
                 notifyText = Res.string.edit_export_notify_text_web,
             )

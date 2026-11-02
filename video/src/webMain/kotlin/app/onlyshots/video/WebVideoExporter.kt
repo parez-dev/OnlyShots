@@ -35,8 +35,8 @@ import org.jetbrains.skia.ImageInfo
 /**
  * The web editor's export: Mediabunny decodes the trimmed clip and draws each frame cover-filled and reframed at the
  * output size, [SkiaFrameDrawer] adds the blur, glass and graph exactly as the iOS and desktop exporters do, and
- * WebCodecs encodes the MP4 through Mediabunny. Always at 1080 on the short side and silent; the result is registered
- * at [out] for the download.
+ * WebCodecs encodes the MP4 through Mediabunny. Always at 1080 on the short side; the result is registered at [out] for
+ * the download.
  */
 class WebVideoExporter(
     private val videoPath: (VideoItem) -> Path,
@@ -53,7 +53,7 @@ class WebVideoExporter(
         val overlayFonts = fonts()
         send(ExportProgress.Rendering(0f))
         val result = runCatching {
-            render(item, Quality.HD_1080, out, alignmentBarcode, overlayFonts) { f ->
+            render(item, Quality.HD_1080, withSound, out, alignmentBarcode, overlayFonts) { f ->
                 trySend(ExportProgress.Rendering(f))
             }
         }
@@ -72,6 +72,7 @@ class WebVideoExporter(
     private suspend fun render(
         item: VideoItem,
         quality: Quality,
+        withSound: Boolean,
         out: Path,
         alignmentBarcode: Boolean,
         overlayFonts: OverlayFonts,
@@ -99,6 +100,7 @@ class WebVideoExporter(
                 r.zoom.toDouble(),
                 ((0.5f - r.x) * kx).toDouble(),
                 ((0.5f - r.y) * ky).toDouble(),
+                withSound && item.hasAudio,
             )
         var finished = false
         try {

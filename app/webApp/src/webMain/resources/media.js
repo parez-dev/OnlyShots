@@ -7,6 +7,8 @@
 // which is why an export needs Chrome, Edge or Safari 16.4+.
 import {
   ALL_FORMATS,
+  AudioSampleSink,
+  AudioSampleSource,
   BlobSource,
   BufferTarget,
   CanvasSource,
@@ -14,7 +16,9 @@ import {
   Mp4OutputFormat,
   Output,
   QUALITY_HIGH,
+  QUALITY_MEDIUM,
   VideoSampleSink,
+  canEncodeAudio,
 } from 'https://cdn.jsdelivr.net/npm/mediabunny@1.61.4/+esm';
 
 // Files ---------------------------------------------------------------------------------------------------------------
@@ -447,6 +451,9 @@ const exp = {
   ctx: null,
   output: null,
   source: null,
+  audio: null, // { sink, source }: the clip's sound, re-encoded into the export at the end
+  start: 0,
+  end: 0,
   zoom: 1,
   offsetX: 0,
   offsetY: 0,
@@ -457,7 +464,7 @@ const exp = {
  * Starts walking the decoded frames of [start, end] seconds and an MP4 of w × h. The picture is drawn cover-filled and
  * reframed here, at the output size, so Kotlin never handles a 4K source frame. Resolves with the frame rate.
  */
-async function exportStart(path, w, h, start, end, zoom, offsetX, offsetY) {
+async function exportStart(path, w, h, start, end, zoom, offsetX, offsetY, withSound) {
   exportReset();
   exp.input = inputOf(path);
   const track = await exp.input.getPrimaryVideoTrack();
@@ -468,12 +475,40 @@ async function exportStart(path, w, h, start, end, zoom, offsetX, offsetY) {
   exp.frameCtx = exp.frame.getContext('2d', { willReadFrequently: true });
   exp.canvas = new OffscreenCanvas(w, h);
   exp.ctx = exp.canvas.getContext('2d');
-  Object.assign(exp, { zoom, offsetX, offsetY, cancelled: false });
+  Object.assign(exp, { zoom, offsetX, offsetY, start, end, cancelled: false });
   exp.output = new Output({ format: new Mp4OutputFormat({ fastStart: 'in-memory' }), target: new BufferTarget() });
   exp.source = new CanvasSource(exp.canvas, { codec: 'avc', bitrate: QUALITY_HIGH });
   exp.output.addVideoTrack(exp.source, { frameRate: fps });
+  // The sound is decoded and encoded again as AAC, which an MP4 holds whatever the source carried. A browser with no
+  // AAC encoder (and WebCodecs reports that per codec) exports the picture alone rather than failing the whole video.
+  const sound = withSound ? await exp.input.getPrimaryAudioTrack().catch(() => null) : null;
+  if (sound && (await canEncodeAudio('aac'))) {
+    const source = new AudioSampleSource({ codec: 'aac', bitrate: QUALITY_MEDIUM });
+    exp.output.addAudioTrack(source);
+    exp.audio = { sink: new AudioSampleSink(sound), source };
+  }
   await exp.output.start();
   return fps;
+}
+
+/**
+ * Writes the clip's sound into the export, shifted so it starts where the trim does. Done in one pass at the end: the
+ * MP4 is built in memory until finalize, so nothing depends on the two tracks arriving interleaved.
+ *
+ * ponytail: a sample straddling the trim's start goes in whole, which can carry a few milliseconds of what came
+ * before. AudioSample.trim() would cut it exactly, for a frame of sound nobody hears.
+ */
+async function exportAddSound() {
+  if (!exp.audio) return;
+  for await (const sample of exp.audio.sink.samples(exp.start, exp.end)) {
+    if (exp.cancelled) {
+      sample.close();
+      return;
+    }
+    sample.setTimestamp(Math.max(0, sample.timestamp - exp.start));
+    await exp.audio.source.add(sample);
+    sample.close();
+  }
 }
 
 /** Decodes the next frame; resolves with its time in seconds, or -1 at the end. */
@@ -506,6 +541,7 @@ async function exportAddFrom(memory, address, timestamp, duration) {
 
 /** Finishes the MP4 and registers it under [outPath]. */
 async function exportFinish(outPath) {
+  await exportAddSound();
   await exp.output.finalize();
   files.set(outPath, new Blob([exp.output.target.buffer], { type: 'video/mp4' }));
   exportReset();
@@ -525,7 +561,7 @@ async function exportCancel() {
 
 function exportReset() {
   exp.sample?.close();
-  Object.assign(exp, { input: null, samples: null, sample: null, output: null, source: null });
+  Object.assign(exp, { input: null, samples: null, sample: null, output: null, source: null, audio: null });
 }
 
 globalThis.cg = {

@@ -164,7 +164,8 @@ format; editor crops. Screen held only while take runs (`LockOrientation`; iOS v
 - **Android:** Media3 Transformer + `OverlayEffect`.
 - **iOS:** `AVAssetReader` → Skia → `AVAssetWriter` pixel buffers.
 - **Desktop:** FFmpeg (JavaCV) → Skia → FFmpeg.
-- **Web:** Mediabunny + WebCodecs (`app/webApp/.../media.js`), 1080×1920, silent.
+- **Web:** Mediabunny + WebCodecs (`app/webApp/.../media.js`), 1080×1920. Sound re-encoded as AAC where the
+  browser can (`exportAddSound`, after the frames).
 
 iOS, desktop, web share `SkiaFrameDrawer` (`video/src/skikoMain`). `reframe` = `graphicsLayer` in preview, Media3
 `MatrixTransformation`, `SkiaFrameDrawer` transform, `media.js` cover draw: same mapping as `Reframe.map`. Alignment
