@@ -71,38 +71,31 @@ DUO = [
     ("open", "03 / EDIT", "LINE IT UP AFTER", "Any video, any shot file. Trim and export."),
 ]
 
-# The App Store slots, from Apple's own spec
-# (developer.apple.com/help/app-store-connect/reference/app-information/creative-assets-specifications/, read
-# 2026-10-29) at the sizes the template's artwork is drawn for, all of them on Apple's accepted list. Required are
-# one iPhone with Dynamic Island (medium, 1206 x 2622) and, since the app runs on iPad, one iPad 13-inch. Duo is
-# required from April 2027 on iOS 27.1+. Apple scales the larger iPhone slots down from the medium one, so no 6.9"
-# set is made: the template draws no 6.9" device to frame it with.
+# The App Store slots. App Store Connect offers three screenshot tabs for this app — "iPhone with Dynamic Island
+# (medium display)", "iPhone Duo" and "iPad 13-inch" — and each takes up to ten pictures in one sequence, whatever
+# their shape: the Duo tab's own hint lists 1398 x 2034 and 2853 x 2007 side by side, and the iPad tab takes both
+# orientations. So these rows are grouped by tab, not by device shape, through `into`: a folder and the number the
+# row starts at. There is no 11-inch tab, so no 11-inch set is made.
 #
-# The 13-inch slots keep the hairline frame: the only iPad the template draws is an 11-inch, whose screen is a
-# different shape (1210 x 834 against 1366 x 1024), so framing a 13-inch shot with it would stretch the hardware.
+# Sizes are the ones the template's artwork is drawn for, all on Apple's accepted list. Apple scales the larger
+# iPhone slots down from the medium one, so no 6.9-inch set is made either.
 #
-#   (directory, frames, screen suffix, frame w, h, grid cell, scale, copy(x, y, w, hs), device(x, y, sw, sh, pad, tick))
-APPSTORE = [
-    ("ipad-13", TABLET, "-M", 1024, 1366, 55, 2, (68, 82, 888, 62), (109, 512, 785, 1256, 14, 21)),
-    ("ipad-13-landscape", TABLET, "-B", 1366, 1024, 34, 2, (56, 184, 352, 44), (455, 240, 834, 521, 11, 15)),
-]
-
-# The framed slots: (directory, frames, how to find the screen, frame w, h, grid cell, scale, copy, device x/y/w)
-DEVICE_OF = {
-    "iphone": IPHONE,
-    "ipad-11": IPAD_P,
-    "ipad-11-landscape": IPAD_L,
-    "duo-outer": DUO_OUTER,
-    "duo-inner": DUO_INNER,
-}
-
+#   (into, frames, how to find the screen, frame w, h, grid cell, scale, copy(x, y, w, hs), device x/y/w)
 FRAMED = [
-    ("iphone", PHONE, lambda n: SCREENS / f"{n}.png", 402, 874, 26, 3, (27, 36, 336, 28), (60, 232, 282)),
-    ("ipad-11", TABLET, lambda n: SCREENS / f"{n}-M.png", 834, 1210, 44, 2, (56, 68, 722, 50), (96, 430, 642)),
-    ("ipad-11-landscape", TABLET, lambda n: SCREENS / f"{n}-B.png", 1210, 834, 30, 2, (50, 150, 310, 39), (404, 118, 760)),
-    ("duo-outer", DUO, lambda n: DUO_SHOTS / f"closed-portrait-{n}.png", 466, 678, 31, 3, (31, 41, 388, 32), (106, 262, 253)),
-    ("duo-inner", DUO, lambda n: DUO_SHOTS / f"open-landscape-{n}.png", 951, 669, 34, 3, (46, 60, 392, 34), (470, 167, 460)),
+    (("iphone", 1), PHONE, lambda n: SCREENS / f"{n}.png", 402, 874, 26, 3, (27, 36, 336, 28), (60, 232, 282)),
+    (("iphone-duo", 1), DUO, lambda n: DUO_SHOTS / f"closed-portrait-{n}.png", 466, 678, 31, 3, (31, 41, 388, 32), (106, 262, 253)),
+    (("iphone-duo", 4), DUO, lambda n: DUO_SHOTS / f"open-landscape-{n}.png", 951, 669, 34, 3, (46, 60, 392, 34), (470, 167, 460)),
+    (("ipad-13", 1), TABLET, lambda n: SCREENS / f"{n}-M.png", 1024, 1366, 55, 2, (68, 82, 888, 62), (192, 433, 640)),
+    (("ipad-13", 5), TABLET, lambda n: SCREENS / f"{n}-B.png", 1366, 1024, 34, 2, (56, 184, 352, 44), (536, 241, 760)),
 ]
+
+DEVICE_OF = {
+    ("iphone", 1): IPHONE,
+    ("iphone-duo", 1): DUO_OUTER,
+    ("iphone-duo", 4): DUO_INNER,
+    ("ipad-13", 1): IPAD_P,
+    ("ipad-13", 5): IPAD_L,
+}
 
 
 HEAD = f"""<!doctype html><meta charset="utf-8">
@@ -248,22 +241,18 @@ def main() -> None:
         body = copy(64, 96, 360, *c, 44) + device(472, 152, 736, 460, 10, 14, SCREENS / f"{scr}-B.png")
         jobs.append((frame(1280, 800, 32, body), 1280, 800, 2, PLAY / "tablet-10" / f"{i:02}.png"))
     jobs.append((feature(), 1024, 500, 1, PLAY / "feature-graphic-1024x500.png"))
-    for d, frames, suffix, fw, fh, cell, scale, (cx, cy, cw, hs), (dx, dy, sw, sh, pad, tick) in APPSTORE:
-        (APPSTORE_DIR / d).mkdir(parents=True, exist_ok=True)
-        for i, (scr, *c) in enumerate(frames, 1):
-            body = copy(cx, cy, cw, *c, hs) + device(dx, dy, sw, sh, pad, tick, SCREENS / f"{scr}{suffix}.png")
-            jobs.append((frame(fw, fh, cell, body), fw, fh, scale, APPSTORE_DIR / d / f"{i:02}.png"))
-    for d, frames, find, fw, fh, cell, scale, (cx, cy, cw, hs), (dx, dy, dw) in FRAMED:
-        dev = DEVICE_OF[d]
-        shots = [(scr, c, find(scr)) for scr, *c in frames]
-        missing = [s.name for _, _, s in shots if not s.exists()]
+    for into, frames, find, fw, fh, cell, scale, (cx, cy, cw, hs), (dx, dy, dw) in FRAMED:
+        tab, first = into
+        dev = DEVICE_OF[into]
+        shots = [(c, find(scr)) for scr, *c in frames]
+        missing = [s.name for _, s in shots if not s.exists()]
         if missing:
-            print(f"{d}: skipped, no {', '.join(missing)}")
+            print(f"{tab} {first:02}+: skipped, no {', '.join(missing)}")
             continue
-        (APPSTORE_DIR / d).mkdir(parents=True, exist_ok=True)
-        for i, (_, c, shot) in enumerate(shots, 1):
+        (APPSTORE_DIR / tab).mkdir(parents=True, exist_ok=True)
+        for i, (c, shot) in enumerate(shots, first):
             body = copy(cx, cy, cw, *c, hs) + framed(dx, dy, dw, shot, dev)
-            jobs.append((frame(fw, fh, cell, body), fw, fh, scale, APPSTORE_DIR / d / f"{i:02}.png"))
+            jobs.append((frame(fw, fh, cell, body), fw, fh, scale, APPSTORE_DIR / tab / f"{i:02}.png"))
     for page, w, h, scale, out in jobs:
         shoot(chrome, page, w, h, scale, out)
         print(out.relative_to(HERE))
